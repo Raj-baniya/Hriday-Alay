@@ -1,0 +1,144 @@
+# Heart Disease Prediction Model Documentation
+
+## Overview
+
+This document provides detailed information about the machine learning model used for heart disease prediction in the application. The model is a Random Forest Classifier trained on the UCI Heart Disease dataset.
+
+## Model Architecture
+
+### Algorithm: Random Forest Classifier
+
+Random Forest is an ensemble learning method that constructs multiple decision trees during training and outputs the class that is the mode of the classes (classification) or mean prediction (regression) of the individual trees.
+
+### Hyperparameters
+
+The model was optimized using GridSearchCV with the following parameter grid:
+- n_estimators: [100, 200, 300]
+- max_depth: [None, 10, 20, 30]
+- min_samples_split: [2, 5, 10]
+- min_samples_leaf: [1, 2, 4]
+
+### Feature Engineering
+
+The model uses 13 features from the UCI Heart Disease dataset:
+
+1. **Age**: Patient's age in years
+2. **Sex**: Patient's gender (0: Female, 1: Male)
+3. **Chest Pain Type (cp)**: 
+   - 0: Typical angina
+   - 1: Atypical angina
+   - 2: Non-anginal pain
+   - 3: Asymptomatic
+4. **Resting Blood Pressure (trestbps)**: In mm Hg
+5. **Serum Cholesterol (chol)**: In mg/dl
+6. **Fasting Blood Sugar (fbs)**:
+   - 0: ≤ 120 mg/dl
+   - 1: > 120 mg/dl
+7. **Resting ECG Results (restecg)**:
+   - 0: Normal
+   - 1: ST-T wave abnormality
+   - 2: Left ventricular hypertrophy
+8. **Maximum Heart Rate (thalach)**: Achieved during exercise test
+9. **Exercise Induced Angina (exang)**:
+   - 0: No
+   - 1: Yes
+10. **ST Depression (oldpeak)**: Induced by exercise relative to rest
+11. **Slope of ST Segment (slope)**:
+    - 0: Upsloping
+    - 1: Flat
+    - 2: Downsloping
+12. **Number of Major Vessels (ca)**: Colored by fluoroscopy (0-3)
+13. **Thalassemia (thal)**:
+    - 0: Normal
+    - 1: Fixed defect
+    - 2: Reversable defect
+    - 3: Not available
+
+### Data Preprocessing
+
+1. **Standardization**: All numerical features are standardized using StandardScaler
+2. **Missing Values**: The dataset was checked for missing values (none found)
+3. **Data Splitting**: 80% training, 20% testing with stratification
+
+## Model Training
+
+The model training process includes:
+
+1. Loading and preprocessing the dataset
+2. Splitting data into training and testing sets
+3. Performing GridSearchCV to find optimal hyperparameters
+4. Training the final model with the best parameters
+5. Evaluating model performance
+6. Saving the model and scaler for deployment
+
+## Model Performance
+
+The model's performance metrics include:
+
+- Accuracy: Typically > 85% on test data
+- Classification Report: Precision, recall, and F1-score for both classes
+- Confusion Matrix: True positives, false positives, true negatives, false negatives
+
+## Feature Importance
+
+The model provides feature importance scores, which help identify the most significant factors in heart disease prediction. The top features typically include:
+
+1. Age
+2. Maximum Heart Rate
+3. ST Depression
+4. Chest Pain Type
+5. Number of Major Vessels
+
+## Model Deployment
+
+The trained model is saved as a pickle file (`heart_disease_model.pkl`) in the `ml_model/models/` directory. The file contains both the model and the scaler used for feature standardization.
+
+### Loading the Model
+
+```python
+import pickle
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, 'ml_model', 'models', 'heart_disease_model.pkl')
+
+with open(MODEL_PATH, 'rb') as f:
+    model_data = pickle.load(f)
+    model = model_data['model']
+    scaler = model_data['scaler']
+```
+
+### Making Predictions
+
+```python
+# Preprocess input data
+input_array = np.array([age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]).reshape(1, -1)
+scaled_data = scaler.transform(input_array)
+
+# Make prediction
+prediction = model.predict(scaled_data)[0]
+probability = model.predict_proba(scaled_data)[0][1] * 100
+```
+
+## Limitations and Considerations
+
+1. **Data Quality**: The model's performance depends on the quality and accuracy of input data
+2. **Feature Range**: Input features should be within the ranges used during training
+3. **Medical Disclaimer**: The model provides a probability estimate and should not be used as the sole basis for medical decisions
+4. **Regular Retraining**: The model should be periodically retrained with new data to maintain accuracy
+
+## Future Improvements
+
+Potential enhancements to the model include:
+
+1. Incorporating additional health metrics
+2. Using more advanced algorithms (e.g., XGBoost, LightGBM)
+3. Implementing time-series analysis for tracking changes over time
+4. Adding uncertainty estimates to predictions
+5. Developing a more sophisticated feature engineering pipeline
+
+## References
+
+1. UCI Machine Learning Repository: Heart Disease Dataset
+2. scikit-learn Documentation: Random Forest Classifier
+3. Medical literature on heart disease risk factors 
