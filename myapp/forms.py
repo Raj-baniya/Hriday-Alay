@@ -130,3 +130,8 @@ class SimpleDoctorSignupForm(UserCreationForm):
             user.save()
         return user
 
+class CustomAuthenticationForm(AuthenticationForm):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'password']
+
