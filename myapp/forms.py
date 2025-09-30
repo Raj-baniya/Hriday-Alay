@@ -64,3 +64,69 @@ class DoctorSignupForm(UserCreationForm):
             user.save()
         return user
 
+class SimplePatientSignupForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    phone_number = forms.CharField(
+        required=True,
+        validators=[RegexValidator(
+            regex=r'^\+?1?\d{9,15}$',
+            message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed."
+        )]
+    )
+    first_name = forms.CharField(max_length=30, required=True)
+    last_name = forms.CharField(max_length=30, required=True)
+    
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'phone_number', 'first_name', 'last_name', 'password1', 'password2')
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        user.phone_number = self.cleaned_data['phone_number']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        user.user_type = 'patient'
+        if commit:
+            user.save()
+        return user
+
+class SimpleDoctorSignupForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    phone_number = forms.CharField(
+        required=True,
+        validators=[RegexValidator(
+            regex=r'^\+?1?\d{9,15}$',
+            message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed."
+        )]
+    )
+    first_name = forms.CharField(max_length=30, required=True)
+    last_name = forms.CharField(max_length=30, required=True)
+    medical_license_number = forms.CharField(max_length=100, required=True)
+    specialization = forms.CharField(max_length=100, required=True)
+    dob = forms.DateField(
+        required=True,
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        help_text='Please enter your date of birth'
+    )
+    gender = forms.ChoiceField(
+        choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')],
+        required=True
+    )
+    
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'phone_number', 'first_name', 'last_name', 
+                 'medical_license_number', 'specialization', 'dob', 'gender', 'password1', 'password2')
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        user.phone_number = self.cleaned_data['phone_number']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        user.user_type = 'doctor'
+        if commit:
+            user.save()
+        return user
+
