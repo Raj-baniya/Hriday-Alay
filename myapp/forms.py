@@ -1,4 +1,3 @@
-"""Forms for Hriday Alay cardiac disease prediction system."""
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser, DoctorProfile, PatientProfile, HeartDiseasePrediction
@@ -220,5 +219,16 @@ class HeartDiseasePredictionForm(forms.Form):
             (3, 'Reversible Defect')
         ],
         widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+class PatientSearchForm(forms.Form):
+    """Form for searching patients by username."""
+    username = forms.CharField(
+        max_length=150,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter patient username'
+        })
     )
 
