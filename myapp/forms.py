@@ -135,3 +135,89 @@ class CustomAuthenticationForm(AuthenticationForm):
         model = CustomUser
         fields = ['username', 'password']
 
+class HeartDiseasePredictionForm(forms.Form):
+    age = forms.IntegerField(
+        min_value=1,
+        max_value=120,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    sex = forms.ChoiceField(
+        choices=[(0, 'Female'), (1, 'Male')],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    cp = forms.ChoiceField(
+        choices=[
+            (0, 'Typical Angina'),
+            (1, 'Atypical Angina'),
+            (2, 'Non-anginal Pain'),
+            (3, 'Asymptomatic')
+        ],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    trestbps = forms.IntegerField(
+        label='Resting Blood Pressure (mm Hg)',
+        min_value=90,
+        max_value=200,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    chol = forms.IntegerField(
+        label='Serum Cholesterol (mg/dl)',
+        min_value=100,
+        max_value=600,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    fbs = forms.ChoiceField(
+        label='Fasting Blood Sugar > 120 mg/dl',
+        choices=[(0, 'No'), (1, 'Yes')],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    restecg = forms.ChoiceField(
+        label='Resting ECG Results',
+        choices=[
+            (0, 'Normal'),
+            (1, 'ST-T Wave Abnormality'),
+            (2, 'Left Ventricular Hypertrophy')
+        ],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    thalach = forms.IntegerField(
+        label='Maximum Heart Rate',
+        min_value=60,
+        max_value=220,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    exang = forms.ChoiceField(
+        label='Exercise Induced Angina',
+        choices=[(0, 'No'), (1, 'Yes')],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    oldpeak = forms.FloatField(
+        label='ST Depression',
+        min_value=0.0,
+        max_value=6.2,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'})
+    )
+    slope = forms.ChoiceField(
+        label='Slope of Peak Exercise ST Segment',
+        choices=[
+            (0, 'Upsloping'),
+            (1, 'Flat'),
+            (2, 'Downsloping')
+        ],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    ca = forms.ChoiceField(
+        label='Number of Major Vessels',
+        choices=[(0, '0'), (1, '1'), (2, '2'), (3, '3')],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    thal = forms.ChoiceField(
+        label='Thalassemia',
+        choices=[
+            (1, 'Normal'),
+            (2, 'Fixed Defect'),
+            (3, 'Reversible Defect')
+        ],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
