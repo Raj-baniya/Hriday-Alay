@@ -179,30 +179,34 @@ def admin_login(request):
     return render(request, 'myapp/adminlogin.html', {'form': form})
 
 # Dashboards
-
-from django.contrib.auth.decorators import login_required
-from ml_model import predict_heart_disease
-from .forms import HeartDiseasePredictionForm
-
-@login_required
-def heart_disease_prediction(request):
-    if not request.user.is_patient:
-        messages.error(request, "Only patients can access the prediction page.")
-        return redirect('home')
-    form = HeartDiseasePredictionForm()
-    return render(request, 'myapp/heart_disease_prediction.html', {'form': form})
-
-def about(request):
     return render(request, 'myapp/about_us.html')
 
 def contact(request):
     return render(request, 'myapp/contact_us.html')
 
+# Emergency Services
+def video_call(request):
+    return render(request, 'myapp/video_call.html')
+
+def recommendation_dashboard(request):
+    return render(request, 'myapp/recommendation_dashboard.html')
+
+def location_recommendation(request):
+    return render(request, 'myapp/location_recommendation.html')
+
+def food_recommendation(request):
+    return render(request, 'myapp/food_recommendation.html')
+
+def ecg_data(request):
+    return render(request, 'myapp/embedded_ECG.html')
+
+# Logout
 def logout_view(request):
     logout(request)
     messages.success(request, "You have been successfully logged out.")
     return redirect('home')
 
+# Auth Redirect Helper (optional utility)
 def check_auth(request):
     if request.user.is_authenticated:
         if request.user.is_doctor:
@@ -212,3 +216,70 @@ def check_auth(request):
         elif request.user.is_superuser:
             return redirect('admin_dashboard')
     return redirect('home')
+
+@login_required
+def health_data(request):
+    return render(request, 'myapp/health_data.html')  # Make sure this template exists
+
+@login_required
+def heart_disease_prediction(request):
+    # Check if user is a patient
+    if not request.user.is_patient:
+        messages.error(request, "Only patients can access the prediction page.")
+        return redirect('home')
+    
+    if request.method == 'POST':
+        form = HeartDiseasePredictionForm(request.POST)
+        if form.is_valid():
+            try:
+                # Get form data
+                form_data = form.cleaned_data
+                
+                # Make prediction using the imported function
+                prediction, probability = predict_heart_disease(form_data)
+                
+                if prediction is not None:
+                    # Save prediction to database
+                    HeartDiseasePrediction.objects.create(
+                        patient=request.user,
+                        prediction_result=bool(prediction),
+                        probability=probability,
+                        age=form_data['age'],
+                        sex=form_data['sex'],
+                        cp=form_data['cp'],
+                        trestbps=form_data['trestbps'],
+                        chol=form_data['chol'],
+                        fbs=form_data['fbs'],
+                        restecg=form_data['restecg'],
+                        thalach=form_data['thalach'],
+                        exang=form_data['exang'],
+                        oldpeak=form_data['oldpeak'],
+                        slope=form_data['slope'],
+                        ca=form_data['ca'],
+                        thal=form_data['thal']
+                    )
+                    
+                    # Prepare result message
+                    result_text = 'High Risk' if prediction == 1 else 'Low Risk'
+                    
+                    context = {
+                        'form': form,
+                        'result': result_text,
+                        'probability': f'{probability:.2f}',
+                        'prediction_saved': True
+                    }
+                    
+                    messages.success(request, 'Prediction completed successfully!')
+                    return render(request, 'myapp/heart_disease_prediction.html', context)
+                else:
+                    messages.error(request, 'Error making prediction. Please try again.')
+            except Exception as e:
+                messages.error(request, f'An error occurred: {str(e)}')
+        else:
+            messages.error(request, 'Please correct the errors in the form.')
+    else:
+        form = HeartDiseasePredictionForm()
+    
+    return render(request, 'myapp/heart_disease_prediction.html', {'form': form})
+
+@login_required
