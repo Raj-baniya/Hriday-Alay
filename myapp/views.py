@@ -114,6 +114,71 @@ def patient_signup(request):
     return render(request, 'myapp/patient_signup.html', {'form': form})
 
 # Login Views
+def login_view(request):
+    if request.method == 'POST':
+        form = CustomAuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            
+            # Redirect based on user type
+            if user.is_superuser:
+                return redirect('admin_dashboard')
+            elif user.is_doctor:
+                return redirect('doctor_dashboard')
+            elif user.is_patient:
+                return redirect('patient_dashboard')
+            else:
+                return redirect('home')
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = CustomAuthenticationForm()
+    return render(request, 'myapp/login.html', {'form': form})
+
+def doctor_login(request):
+    if request.method == 'POST':
+        form = CustomAuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            if user.is_doctor:
+                login(request, user)
+                return redirect('doctor_dashboard')
+            else:
+                messages.error(request, "Invalid credentials for a doctor.")
+    else:
+        form = CustomAuthenticationForm()
+    return render(request, 'myapp/doctorlogin.html', {'form': form})
+
+def patient_login(request):
+    if request.method == 'POST':
+        form = CustomAuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            if user.is_patient:
+                login(request, user)
+                return redirect('patient_dashboard')
+            else:
+                messages.error(request, "Invalid credentials for a patient.")
+    else:
+        form = CustomAuthenticationForm()
+    return render(request, 'myapp/patientlogin.html', {'form': form})
+
+def admin_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            if user.is_superuser:
+                login(request, user)
+                return redirect('admin_dashboard')
+            else:
+                messages.error(request, "You are not an admin.")
+    else:
+        form = AuthenticationForm()
+    return render(request, 'myapp/adminlogin.html', {'form': form})
+
+# Dashboards
 
 def about(request):
     return render(request, 'myapp/about_us.html')
