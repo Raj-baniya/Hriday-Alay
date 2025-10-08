@@ -180,6 +180,18 @@ def admin_login(request):
 
 # Dashboards
 
+from django.contrib.auth.decorators import login_required
+from ml_model import predict_heart_disease
+from .forms import HeartDiseasePredictionForm
+
+@login_required
+def heart_disease_prediction(request):
+    if not request.user.is_patient:
+        messages.error(request, "Only patients can access the prediction page.")
+        return redirect('home')
+    form = HeartDiseasePredictionForm()
+    return render(request, 'myapp/heart_disease_prediction.html', {'form': form})
+
 def about(request):
     return render(request, 'myapp/about_us.html')
 
