@@ -179,6 +179,26 @@ def admin_login(request):
     return render(request, 'myapp/adminlogin.html', {'form': form})
 
 # Dashboards
+@login_required
+def doctor_dashboard(request):
+    if not request.user.is_doctor:
+        messages.error(request, "You don't have permission to access this page")
+        return redirect('home')
+    
+    # Get the doctor's profile
+    doctor_profile = DoctorProfile.objects.get(user=request.user)
+    
+    # Get today's appointments (you'll need to implement this model)
+    today_appointments = []  # Replace with actual appointment query
+    
+    context = {
+        'doctor_profile': doctor_profile,
+        'today_appointments': today_appointments,
+        'user': request.user,
+    }
+    
+    return render(request, 'myapp/doctor_dashboard.html', context)
+
     return render(request, 'myapp/about_us.html')
 
 def contact(request):
