@@ -339,3 +339,44 @@ def heart_disease_prediction(request):
     return render(request, 'myapp/heart_disease_prediction.html', {'form': form})
 
 @login_required
+@login_required
+def patient_search(request):
+    """View for searching patients and viewing their heart disease predictions."""
+    # Check if the user is a doctor
+    if not request.user.is_doctor:
+        messages.error(request, "Only doctors can access patient records.")
+        return redirect('home')
+    
+    search_query = request.GET.get('q', '')
+    patient = None
+    heart_predictions = None
+    error_message = None
+    form = PatientSearchForm(initial={'username': search_query})
+
+    if search_query:
+        try:
+            # Get the patient user
+            patient_user = CustomUser.objects.get(username=search_query)
+            if not patient_user.is_patient:
+                error_message = "The user found is not a patient."
+                patient = None
+            else:
+                # Get the patient profile
+                patient = PatientProfile.objects.get(user=patient_user)
+                # Get heart disease predictions
+                heart_predictions = HeartDiseasePrediction.objects.filter(
+                    patient=patient_user
+                ).order_by('-prediction_date')
+        except CustomUser.DoesNotExist:
+            error_message = "No patient found with the given username."
+        except PatientProfile.DoesNotExist:
+            error_message = "Patient profile not found."
+
+    context = {
+        'form': form,
+        'search_query': search_query,
+        'patient': patient,
+        'heart_predictions': heart_predictions,
+        'error_message': error_message,
+    }
+    return render(request, 'myapp/patient_search.html', context)
