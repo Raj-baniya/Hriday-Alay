@@ -199,6 +199,42 @@ def doctor_dashboard(request):
     
     return render(request, 'myapp/doctor_dashboard.html', context)
 
+@login_required
+def patient_dashboard(request):
+    if not request.user.is_patient:
+        messages.error(request, "You don't have permission to access this page")
+        return redirect('home')
+    
+    # Get the patient's profile
+    patient_profile = PatientProfile.objects.get(user=request.user)
+    
+    # Get today's appointments (you'll need to implement this model)
+    recent_appointments = []  # Replace with actual appointment query
+    
+    # Calculate health score (example implementation)
+    health_score = 85  # This should be calculated based on actual health metrics
+    
+    # Get next appointment
+    next_appointment = None  # Replace with actual appointment query
+    
+    context = {
+        'patient_profile': patient_profile,
+        'recent_appointments': recent_appointments,
+        'health_score': health_score,
+        'next_appointment': next_appointment,
+        'user': request.user,
+    }
+    
+    return render(request, 'myapp/patient_dashboard.html', context)
+
+@login_required
+def admin_dashboard(request):
+    if not request.user.is_superuser:
+        messages.error(request, "You don't have permission to access this page")
+        return redirect('home')
+    return render(request, 'myapp/admin_dashboard.html')
+
+# Navigation Pages
     return render(request, 'myapp/about_us.html')
 
 def contact(request):
