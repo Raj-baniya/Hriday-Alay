@@ -255,6 +255,9 @@ def food_recommendation(request):
     return render(request, 'myapp/food_recommendation.html')
 
 def ecg_data(request):
+    return render(request, 'myapp/embedded_ECG.html')
+
+# Logout
 def logout_view(request):
     logout(request)
     messages.success(request, "You have been successfully logged out.")
