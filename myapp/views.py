@@ -246,6 +246,15 @@ def video_call(request):
     return render(request, 'myapp/video_call.html')
 
 def recommendation_dashboard(request):
+    return render(request, 'myapp/recommendation_dashboard.html')
+
+def location_recommendation(request):
+    return render(request, 'myapp/location_recommendation.html')
+
+def food_recommendation(request):
+    return render(request, 'myapp/food_recommendation.html')
+
+def ecg_data(request):
 def logout_view(request):
     logout(request)
     messages.success(request, "You have been successfully logged out.")
