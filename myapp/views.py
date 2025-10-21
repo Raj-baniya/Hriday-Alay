@@ -340,6 +340,76 @@ def heart_disease_prediction(request):
     return render(request, 'myapp/heart_disease_prediction.html', {'form': form})
 
 @login_required
+def implant_pricing(request):
+    return render(request, 'myapp/implant_pricing.html')
+
+def simple_patient_signup(request):
+    if request.method == 'POST':
+        form = SimplePatientSignupForm(request.POST)
+        if form.is_valid():
+            try:
+                # Create the user
+                user = form.save()
+                print(f"User created successfully: {user.username}")
+                
+                # Create a basic patient profile
+                PatientProfile.objects.create(
+                    user=user,
+                    # No other fields required
+                )
+                print(f"Patient profile created successfully for user: {user.username}")
+                
+                messages.success(request, 'Account created successfully. Please login.')
+                return redirect('login')
+            except Exception as e:
+                print(f"Error during patient signup: {str(e)}")
+                messages.error(request, f'Error creating account: {str(e)}')
+        else:
+            print("Form validation errors:", form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = SimplePatientSignupForm()
+    return render(request, 'myapp/simple_patient_signup.html', {'form': form})
+
+# Simple Doctor Signup
+def simple_doctor_signup(request):
+    if request.method == 'POST':
+        form = SimpleDoctorSignupForm(request.POST)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    # Create the user first
+                    user = form.save()
+                    print(f"User created successfully: {user.username}")
+                    
+                    # Create doctor profile with the required fields
+                    profile = DoctorProfile.objects.create(
+                        user=user,
+                        medical_license_number=form.cleaned_data['medical_license_number'],
+                        specialization=form.cleaned_data['specialization'],
+                        dob=form.cleaned_data['dob'],
+                        gender=form.cleaned_data['gender'],
+                        years_of_experience=0  # Default value
+                    )
+                    print(f"Doctor profile created successfully: {profile.id}")
+                    
+                    messages.success(request, 'Account created successfully. Please login.')
+                    return redirect('login')
+            except Exception as e:
+                print(f"Error during doctor signup: {str(e)}")
+                messages.error(request, f'Error creating account: {str(e)}')
+        else:
+            print("Form validation errors:", form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = SimpleDoctorSignupForm()
+    return render(request, 'myapp/doctor_signup_new.html', {'form': form})
+
+# Patient Search View
 @login_required
 def patient_search(request):
     """View for searching patients and viewing their heart disease predictions."""
