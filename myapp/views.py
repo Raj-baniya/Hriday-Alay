@@ -1,4 +1,3 @@
-"""Optimized patient query lookup with select_related."""
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
@@ -236,6 +235,7 @@ def admin_dashboard(request):
     return render(request, 'myapp/admin_dashboard.html')
 
 # Navigation Pages
+def about(request):
     return render(request, 'myapp/about_us.html')
 
 def contact(request):
@@ -246,18 +246,6 @@ def video_call(request):
     return render(request, 'myapp/video_call.html')
 
 def recommendation_dashboard(request):
-    return render(request, 'myapp/recommendation_dashboard.html')
-
-def location_recommendation(request):
-    return render(request, 'myapp/location_recommendation.html')
-
-def food_recommendation(request):
-    return render(request, 'myapp/food_recommendation.html')
-
-def ecg_data(request):
-    return render(request, 'myapp/embedded_ECG.html')
-
-# Logout
 def logout_view(request):
     logout(request)
     messages.success(request, "You have been successfully logged out.")
