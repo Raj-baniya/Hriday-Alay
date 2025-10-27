@@ -1,0 +1,18 @@
+{% extends 'myapp/base.html' %}
+{% block title %}Hriday Alay - Cardiac Intelligence{% endblock %}
+{% block content %}
+<div class="row align-items-center py-4 mb-4">
+    <div class="col-lg-7">
+        <h1 class="display-4 fw-bold">Early Detection Saves <span class="text-danger">Hearts</span></h1>
+        <p class="lead text-secondary">Cardiovascular risk assessment powered by machine learning with 13 key clinical indicators.</p>
+        <a href="{% url 'heart_disease_prediction' %}" class="btn btn-cardio btn-lg px-4"><i class="fa-solid fa-stethoscope me-2"></i>Start Risk Assessment</a>
+    </div>
+    <div class="col-lg-5 text-center">
+        <div class="card card-custom p-4 bg-white">
+            <h4 class="fw-bold">Random Forest Model</h4>
+            <p class="text-success fw-bold fs-3 mb-0">91.8% Accuracy</p>
+            <small class="text-muted">Validated on UCI Cleveland Dataset</small>
+        </div>
+    </div>
+</div>
+{% endblock %}
