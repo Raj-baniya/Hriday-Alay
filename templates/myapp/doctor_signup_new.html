@@ -1,0 +1,8 @@
+{% extends 'myapp/base.html' %}
+{% block title %}Register - Hriday Alay{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-6"><div class="card card-custom p-4">
+    <h3 class="fw-bold text-center mb-4">Register</h3>
+    <form method="POST">{% csrf_token %}{{ form.as_p }}<button type="submit" class="btn btn-cardio w-100">Create Account</button></form>
+</div></div></div>
+{% endblock %}
