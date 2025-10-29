@@ -1,0 +1,28 @@
+{% extends 'myapp/base.html' %}
+{% block title %}Patient Dashboard - Hriday Alay{% endblock %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card card-custom p-4 text-center">
+            <h4 class="fw-bold">{{ user.username }}</h4>
+            <span class="badge bg-info text-dark">Patient Profile</span>
+            <a href="{% url 'heart_disease_prediction' %}" class="btn btn-cardio w-100 mt-3">New Assessment</a>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card card-custom p-4">
+            <h4 class="fw-bold mb-3">Diagnostic Records</h4>
+            <table class="table">
+                <thead><tr><th>Date</th><th>Result</th><th>Probability</th></tr></thead>
+                <tbody>
+                    {% for pred in predictions %}
+                        <tr><td>{{ pred.prediction_date }}</td><td><span class="badge {% if pred.prediction_result %}bg-danger{% else %}bg-success{% endif %}">{% if pred.prediction_result %}High Risk{% else %}Low Risk{% endif %}</span></td><td>{{ pred.probability }}%</td></tr>
+                    {% empty %}
+                        <tr><td colspan="3" class="text-center text-muted">No records found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
